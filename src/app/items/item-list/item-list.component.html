@@ -1,0 +1,31 @@
+<div class="toolbar">
+  <button (click)="logout()">Logout</button>
+</div>
+
+<h2>My Items</h2>
+
+<form (ngSubmit)="addItem()" class="item-form">
+  <input
+    type="text"
+    placeholder="Name"
+    [(ngModel)]="newItem.name"
+    name="name"
+    required
+  />
+  <input
+    type="text"
+    placeholder="Description"
+    [(ngModel)]="newItem.description"
+    name="description"
+    required
+  />
+  <button type="submit">{{ editMode ? "Update" : "Add" }} Item</button>
+</form>
+
+<ul>
+  <li *ngFor="let item of items">
+    <strong>{{ item.name }}</strong> — {{ item.description }}
+    <button (click)="editItem(item)">Edit</button>
+    <button (click)="deleteItem(item._id!)">Delete</button>
+  </li>
+</ul>

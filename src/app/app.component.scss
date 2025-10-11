@@ -1,0 +1,23 @@
+.main-nav {
+  background-color: #1976d2; // blu
+  padding: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  a,
+  button {
+    color: white;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  button:hover,
+  a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
