@@ -15,48 +15,46 @@ import { FormsModule } from '@angular/forms';
 })
 export class ItemListComponent implements OnInit {
   items: Item[] = [];
-  newItem: Item = { name: '', description: '' };
-  editMode = false;
-  editingItemId: string | null = null;
+  newItem: Partial<Item> = { name: '', description: '' };
 
-  constructor(
-    private itemsService: ItemsService,
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  editingId: string | null | undefined = null;
+  editingItem: Partial<Item> = {};
 
-  async ngOnInit() {
-    await this.loadItems();
+  constructor(private itemService: ItemsService) {}
+
+  ngOnInit() {
+    this.loadItems();
   }
 
   async loadItems() {
-    this.items = await this.itemsService.getItems();
+    this.items = await this.itemService.getItems();
   }
 
   async addItem() {
-    if (this.editMode && this.editingItemId) {
-      await this.itemsService.updateItem(this.editingItemId, this.newItem);
-      this.editMode = false;
-      this.editingItemId = null;
-    } else {
-      await this.itemsService.addItem(this.newItem);
-    }
+    if (!this.newItem.name) return;
+    const added = await this.itemService.addItem(this.newItem as Item);
+    this.items.push(added);
     this.newItem = { name: '', description: '' };
-    await this.loadItems();
   }
 
-  editItem(item: Item) {
-    this.newItem = { ...item };
-    this.editMode = true;
-    this.editingItemId = item._id!;
+  startEdit(item: Item) {
+    this.editingId = item._id;
+    this.editingItem = { ...item };
+  }
+
+  async saveEdit(id: string) {
+    const updated = await this.itemService.updateItem(
+      id,
+      this.editingItem as Item
+    );
+    const index = this.items.findIndex((i) => i._id === id);
+    this.items[index] = updated;
+    this.editingId = null;
+    this.editingItem = {};
   }
 
   async deleteItem(id: string) {
-    await this.itemsService.deleteItem(id);
-    await this.loadItems();
-  }
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    await this.itemService.deleteItem(id);
+    this.items = this.items.filter((i) => i._id !== id);
   }
 }
