@@ -1,9 +1,13 @@
-name: Front End, Test CI/CD
+name: Front End CI/CD
 
 on:
   push:
     branches:
       - dev
+      - main
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -23,4 +27,28 @@ jobs:
         run: npm ci
 
       - name: Build Angular app
-        run: npm run build
+        run: npm run build -- --base-href=/frontend/
+
+      - name: Upload website files
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist/frontend/browser
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
