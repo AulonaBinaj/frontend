@@ -3,7 +3,7 @@ name: Front End, Test CI/CD
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   pershendetje:
